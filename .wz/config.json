@@ -1,0 +1,19 @@
+{
+  "$schema": "./config.schema.json",
+  "reviewer": {
+    "backend": "claude-subagent",
+    "_options": ["claude-subagent", "codex", "gpt"],
+    "claude-subagent": { "agent": "reviewer" },
+    "codex": { "command": "codex review --diff", "note": "需本地安装 codex CLI" },
+    "gpt": { "via": "mcp", "model": "gpt-5", "note": "经 MCP/API 调用外部模型做第二意见" },
+    "max_fix_rounds": 2,
+    "lint_fix": true
+  },
+  "qa": {
+    "trigger_score_threshold": 8,
+    "must_trigger": ["feature_done", "api_change", "db_migration", "auth_or_payment", "five_tasks_since_last_qa"],
+    "max_qa_rounds": 3
+  },
+  "visual": { "engine": "backstop", "global_mismatch_threshold": 0.1, "critical_zero_tolerance": true, "max_visual_rounds": 3 },
+  "context": { "clear_after_task": true, "compact_at_percent": 80, "lessons_file": ".wz/memory/lessons.md" }
+}

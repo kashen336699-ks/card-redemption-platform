@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-06-19",
+  "stage": "G1/prd",
+  "sources": [
+    {
+      "source_id": "SRC-001",
+      "type": "PRD/Word",
+      "path": "docs/卡密兑换平台_PRD_V1.0.docx",
+      "title": "卡密兑换平台 PRD V1.0",
+      "summary": "面向闲鱼数字商品订单的卡密兑换与即时交付系统 MVP。涵盖前台兑换流程、卡密状态机、幂等并发、安全风控、API 草案、数据对象、验收标准与高保真设计交付说明。",
+      "confidence": "high",
+      "version": "V1.0",
+      "dated": "2026-06-14"
+    }
+  ],
+  "notes": "MVP 单一权威来源。设计稿（3 个高保真页面）在 PRD 第 14 节描述但文件未随附；G2/design 需向用户索取设计稿链接或由 design-prototype skill 生成原型。"
+}

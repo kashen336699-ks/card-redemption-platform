@@ -1,0 +1,21 @@
+{
+  "name": "card-redemption-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "卡密兑换平台 — 闲鱼数字商品安全兑换与即时交付（MVP）",
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/*",
+    "infrastructure"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/contracts && npm run build -w apps/web",
+    "test": "npm run test -w services/api && npm run test -w apps/web",
+    "test:api": "npm run test -w services/api",
+    "test:web": "npm run test -w apps/web",
+    "synth": "npm run synth -w infrastructure",
+    "typecheck": "npm run typecheck -w packages/contracts && npm run typecheck -w services/api"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# AWS CDK
+cdk.out/
+*.cdk.staging/
+
+# workflow local state
+.wz/state/*.local
+.wz/state/run.json
+
+# logs / misc
+*.log
+npm-debug.log*
+.DS_Store
+coverage/
+
+# visual regression runtime
+backstop_data/bitmaps_test/
+backstop_data/html_report/

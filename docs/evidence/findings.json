@@ -1,0 +1,28 @@
+{
+  "review_id": "VERIFY-G5",
+  "target_diff": "MVP-1 全量（6 feature / 36 task）",
+  "reviewed_specs": ["FR-001", "FR-002", "FR-004", "FR-006", "FR-008", "FR-010", "FR-102", "FR-106", "FR-107", "FR-207", "FR-301", "FR-302", "FR-303", "UX-001", "UX-002", "NFR-001", "NFR-003", "NFR-006", "SEC-001", "SEC-002", "SEC-003", "SEC-004", "SEC-005", "SEC-006", "SEC-007", "SEC-008"],
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "P3",
+      "category": "style",
+      "file": "docs/contracts/openapi.yaml",
+      "line": 0,
+      "requirement_id": "FR-207",
+      "problem": "Draft7 校验器初次校验 SupportLookupResult.redeemed_at:null 报类型错误",
+      "evidence": "OpenAPI 3.0 nullable:true 已声明；按 3.0 语义复验通过",
+      "suggested_fix": "无需修改（校验器语义差异）；如未来用严格 3.0 校验工具可忽略",
+      "auto_fixable": false
+    }
+  ],
+  "summary": {
+    "functional": "后端 34/34、前端 8/8 通过",
+    "visual": "BackstopJS 10/10（5 场景 × 2 断点）",
+    "contract": "ErrorResponse/RedeemSuccess/RedeemProcessing/SupportLookupResult 均符合",
+    "deployability": "cdk synth 成功",
+    "security_smoke": "离线项通过；对真实端点的冒烟列入 G7"
+  },
+  "release_recommendation": "ship",
+  "human_gate_required": false
+}

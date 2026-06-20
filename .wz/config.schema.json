@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WZ Workflow Config",
+  "type": "object",
+  "properties": {
+    "reviewer": {
+      "type": "object",
+      "properties": {
+        "backend": { "enum": ["claude-subagent", "codex", "gpt"] },
+        "max_fix_rounds": { "type": "integer", "minimum": 1 },
+        "lint_fix": { "type": "boolean" }
+      },
+      "required": ["backend"]
+    },
+    "qa": {
+      "type": "object",
+      "properties": {
+        "trigger_score_threshold": { "type": "integer" },
+        "must_trigger": { "type": "array", "items": { "type": "string" } },
+        "max_qa_rounds": { "type": "integer" }
+      }
+    },
+    "visual": { "type": "object" },
+    "context": { "type": "object" }
+  }
+}

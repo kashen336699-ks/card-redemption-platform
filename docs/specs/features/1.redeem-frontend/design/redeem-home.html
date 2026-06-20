@@ -1,0 +1,68 @@
+<!doctype html>
+<!-- 页面：兑换首页 | UX-001/002/003 | FR-001/002/003/009
+     状态：?state=default（默认）/ loading / disabled / error
+     断点：响应式，桌面 1440 / 移动 390 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>卡密兑换 · 首页</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+</head>
+<body>
+<main class="page">
+  <header class="brand">
+    <div class="brand__logo"></div>
+    <div class="brand__name">兑换中心</div>
+    <div class="brand__tag">安全 · 即时 · 免注册</div>
+  </header>
+
+  <h1 class="hero">输入卡密，立即领取你的商品</h1>
+  <p class="muted" style="max-width:520px;margin:0 0 4px;">粘贴闲鱼订单收到的卡密，系统将自动识别商品并安全交付。</p>
+
+  <section class="props" aria-label="价值说明">
+    <div class="prop"><b>低门槛</b>无需注册登录</div>
+    <div class="prop"><b>强确定</b>明确商品与兑换结果</div>
+    <div class="prop"><b>高安全</b>卡密脱敏 · 防重放</div>
+  </section>
+
+  <section class="card" aria-label="卡密兑换">
+    <label for="code">卡密（粘贴或输入，自动忽略空格与大小写）</label>
+    <input class="input" id="code" name="code" inputmode="latin" autocomplete="off"
+           placeholder="ABCD-EFGH-JKLM-NPQR" aria-describedby="code-hint">
+    <p class="hint hint--error" id="code-hint" role="alert"><!-- FR-002：error 态填充：卡密格式有误，请检查后重试 --></p>
+
+    <button class="btn" id="submit" type="button">
+      <span class="spinner" aria-hidden="true"></span>立即兑换
+    </button>
+
+    <div class="sechint">
+      <span class="dot">●</span>
+      <span>我们不会在链接中传递卡密；交付信息请勿转发他人。</span>
+    </div>
+  </section>
+
+  <section class="steps" aria-label="兑换步骤">
+    <div class="step"><span class="n">1</span><div>粘贴卡密</div></div>
+    <div class="step"><span class="n">2</span><div>系统校验</div></div>
+    <div class="step"><span class="n">3</span><div>领取商品</div></div>
+  </section>
+
+  <footer>遇到问题？失败时页面会提供售后入口。本服务全程 HTTPS 加密。</footer>
+</main>
+
+<script>
+  // 仅用于原型态切换（backstop 截图），非业务逻辑
+  var s = new URLSearchParams(location.search).get('state');
+  var btn = document.getElementById('submit');
+  var hint = document.getElementById('code-hint');
+  var input = document.getElementById('code');
+  if (s === 'loading') { btn.classList.add('btn--loading'); btn.setAttribute('disabled',''); btn.lastChild.textContent='处理中…'; input.value='ABCD-EFGH-JKLM-NPQR'; }
+  if (s === 'disabled') { btn.setAttribute('disabled',''); }
+  if (s === 'error') { hint.textContent='卡密格式有误，请检查后重试'; input.value='ABCD-12'; input.focus(); }
+  if (!s || s === 'default') { hint.textContent=''; }
+</script>
+</body>
+</html>

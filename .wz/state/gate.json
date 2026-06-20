@@ -1,0 +1,15 @@
+{
+  "$schema": "./gate.schema.json",
+  "project": "card-redemption-platform",
+  "updated_at": "2026-06-19",
+  "gates": {
+    "G0": {"stage": "init",   "status": "passed",  "blockers": [], "evidence": ["docs/evidence/init-report.md", ".wz/memory/repo-profile.json"], "notes": ["ASSUMPTION: 无版本控制（用户跳过 git）", "AWS 凭证缺失，deploy 前补"]},
+    "G1": {"stage": "prd",    "status": "passed", "blockers": [], "evidence": ["docs/specs/product.md", "docs/specs/acceptance.md", ".wz/memory/source-map.json", "docs/decisions/0001-mvp-architecture-decisions.md"], "notes": ["5 BLOCKER 已人工裁决 → ADR-0001"]},
+    "G2": {"stage": "design", "status": "passed", "blockers": [], "evidence": ["docs/specs/features/1.redeem-frontend/design.md", "docs/specs/features/1.redeem-frontend/design/", "docs/specs/architecture.md", "docs/contracts/openapi.yaml (FROZEN, lint VALID)", "docs/decisions/0002-openapi-contract-freeze.md"], "notes": ["设计源=design-prototype 生成原型(无外部稿)", "OpenAPI v1.0.0 frozen, openapi-spec-validator VALID"]},
+    "G3": {"stage": "plan",   "status": "passed", "blockers": [], "evidence": ["docs/specs/PLAN.md", "docs/specs/features/*/tasks.md (6 features, 36 tasks)"], "notes": ["任务数 5/5/8/8/5/5 均≤8", "字段完整、估时15/30min、依赖无环", "5.admin-support 推迟 MVP-2"]},
+    "G4": {"stage": "ai",     "status": "passed", "blockers": [], "evidence": ["docs/evidence/G4-verification-summary.md", "docs/evidence/changelog-*.md", "services/api/**", "apps/web/**", "infrastructure/**"], "notes": ["6 feature/36 task 全 [x]", "本地实测：后端 vitest 34/34、前端 8/8、cdk synth 成功", "SEC-002 并发只成功一次已验证"]},
+    "G5": {"stage": "verify", "status": "passed", "blockers": [], "evidence": ["docs/evidence/verify-report.md", "docs/evidence/findings.json", "docs/evidence/visual/report"], "notes": ["功能 34+8 全过、视觉 10/10、契约 4 类符合、synth 成功", "F-001 P3 信息级(nullable 校验器差异)无需改", "安全冒烟对真实端点列入 G7"]},
+    "G6": {"stage": "review", "status": "passed", "blockers": [], "evidence": ["docs/evidence/review/review-report.md", "docs/evidence/review/findings.json"], "notes": ["独立三视角审查+安全必检", "F-101/F-102/F-103 全部 FIXED（F-101 经人工裁决）", "本地 npm run test:api 35/35 通过（含 F-101 回归断言）", "无未处理 P0/P1"]},
+    "G7": {"stage": "deploy", "status": "passed", "blockers": [], "evidence": ["docs/evidence/deployment-record.md"], "notes": ["Wz-preview 部署成功(218885889674/us-east-2)", "前端 S3+CloudFront, 冒烟 7/7 PASS", "构建修复: vite-env.d.ts + classify never", "前端 https://d2lnhhcasjladg.cloudfront.net / API https://y5dj5lguu2.execute-api.us-east-2.amazonaws.com"]}
+  }
+}

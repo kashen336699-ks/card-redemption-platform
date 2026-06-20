@@ -1,0 +1,22 @@
+{
+  "name": "@card/infrastructure",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": { "app": "bin/app.ts" },
+  "scripts": {
+    "synth": "cdk synth",
+    "diff": "cdk diff",
+    "deploy:preview": "cdk deploy Wz-preview -c env=preview",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.155.0",
+    "constructs": "^10.3.0"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.155.0",
+    "tsx": "^4.17.0",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.4"
+  }
+}

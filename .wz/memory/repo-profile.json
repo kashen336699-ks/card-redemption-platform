@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-06-19",
+  "stage": "G0/init",
+  "project": "card-redemption-platform",
+  "vcs": { "git": true, "branch": "main", "gitignore": true, "note": "2026-06-19 已 git init + .gitignore；首个 commit 待人工（init 约定不自动 commit）。LIMITATION: 沙箱 shell 对挂载目录 .git 无 unlink 权限，git 写操作（stage/commit/清 lock）需在用户原生终端执行。" },
+  "repo_state": "greenfield",
+  "languages": ["TypeScript (计划)"],
+  "frontend": { "framework": "React", "styling": "Tailwind", "status": "未创建" },
+  "backend": { "runtime": "AWS Lambda (Node 22)", "status": "未创建" },
+  "iac": { "tool": "AWS CDK", "version_detected": "2.1128.0", "status": "未创建" },
+  "package_manager": "npm 10.9.8",
+  "node_version": "v22.22.3",
+  "testing": { "unit": "vitest (计划)", "visual": "BackstopJS (计划)" },
+  "existing_code": false,
+  "env_checks": {
+    "node": "ok (v22.22.3)",
+    "npm": "ok (10.9.8)",
+    "cdk": "ok (2.1128.0)",
+    "aws_credentials": "missing — 仅 /wz:deploy 阶段需要，当前非阻塞",
+    "git": "absent — 用户显式跳过"
+  }
+}

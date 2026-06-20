@@ -1,0 +1,60 @@
+{
+  "review_id": "RV-G6-001",
+  "target_diff": "MVP-1 全量（git 未提交，按 tasks.md 涉及文件审查）",
+  "reviewed_specs": ["FR-106", "FR-207", "FR-302", "SEC-001", "SEC-006", "SEC-007", "SEC-002"],
+  "review_lenses": ["基础(规范/类型/逻辑/错误处理/覆盖)", "对抗(攻击者/异常/并发/资源)", "Git Diff 回归"],
+  "security_checks": {
+    "hardcoded_secrets": "无",
+    "injection_eval_innerHTML": "无 eval/dangerouslySetInnerHTML/innerHTML",
+    "frontend_api_url_hardcode": "无（走 VITE_API_BASE_URL）",
+    "env_in_gitignore": "通过",
+    "console_scatter": "统一经 lib/logger 脱敏输出"
+  },
+  "findings": [
+    {
+      "id": "F-101",
+      "severity": "P1",
+      "category": "security",
+      "status": "FIXED",
+      "human_decision": "用户裁决：现在修（2026-06-19）",
+      "file": "services/api/src/repository/dynamo.ts",
+      "line": 74,
+      "requirement_id": "SEC-006",
+      "problem": "幂等记录(IDEMP item)持久化了完整对外 response，其中 delivery 含已解密的交付明文，弱化 SEC-006 字段级加密。GET /redemptions/{id} 也依赖该明文。",
+      "evidence": "commitRedemption Put IDEMP Item.response 落库（含交付明文）",
+      "fix": "幂等记录改存 KMS 密文 + 商品视图（StoredResult{deliveryCipher}），不存明文；幂等重放与 GET 用 reconstructSuccess() 按需解密。node 验证：SEC-002 仍成立、FR-302 重放同 id 且解密正确、幂等记录无明文。新增 vitest 回归断言。",
+      "auto_fixable": false,
+      "security_hold": true
+    },
+    {
+      "id": "F-102",
+      "severity": "P1",
+      "category": "correctness",
+      "status": "FIXED",
+      "file": "services/api/src/repository/dynamo.ts",
+      "line": 155,
+      "requirement_id": "FR-207",
+      "problem": "兑换记录 GSI1PK 用 cardHmac 末四位(hex)，而售后查询用卡密明文末四位(codeLast4)，二者不一致 → 凭末四位的售后查询永远查不到记录；masked_code 也用 hmac 末四位。",
+      "evidence": "Put: CARD4#${card.cardHmac.slice(-4)} vs supportLookup: CARD4#${q.codeLast4}",
+      "fix": "把 lastFour(code) 经 RedeemDeps.cardLast4 贯通到 CommitInput.cardLast4；GSI1PK 与存储 cardLast4 用之；supportLookup/masked_code 用存储的 cardLast4。并发复验通过。",
+      "auto_fixable": true
+    },
+    {
+      "id": "F-103",
+      "severity": "P2",
+      "category": "correctness",
+      "status": "FIXED",
+      "file": "services/api/src/repository/dynamo.ts",
+      "line": 82,
+      "requirement_id": "FR-105",
+      "problem": "getAvailableInventory 用 Query Limit:1 + FilterExpression。DynamoDB Limit 在 Filter 之前生效：首项若为 LOCKED/DELIVERED 会返回空 → 误判 NO_STOCK。",
+      "evidence": "QueryCommand Limit:1 + FilterExpression invStatus=:avail",
+      "fix": "去掉 Limit:1，由 FilterExpression 服务端返回可用项取首条。",
+      "auto_fixable": true
+    }
+  ],
+  "release_recommendation": "ship",
+  "human_gate_required": true,
+  "human_decision": "用户已裁决 F-101 现在修；F-101/F-102/F-103 全部 FIXED；无未处理 P0/P1。",
+  "open_p1": []
+}

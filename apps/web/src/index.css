@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply min-h-full;
+  }
+  body {
+    @apply bg-base text-ink font-sans antialiased;
+  }
+  /* 深色科技感顶部光晕（UX-003） */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(60% 60% at 50% 0%, rgba(124, 58, 237, 0.22), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  :focus-visible {
+    outline: 3px solid #2dd4bf;
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

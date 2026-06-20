@@ -1,0 +1,63 @@
+<!doctype html>
+<!-- 页面：兑换成功 | UX-001/002/003 | FR-005/006/007
+     断点：响应式，桌面 1440 / 移动 390 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>卡密兑换 · 成功</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+</head>
+<body>
+<main class="page">
+  <header class="brand">
+    <div class="brand__logo"></div>
+    <div class="brand__name">兑换中心</div>
+    <div class="brand__tag">安全 · 即时 · 免注册</div>
+  </header>
+
+  <section class="card" aria-label="兑换成功">
+    <div class="status-icon status-icon--ok" aria-hidden="true">✓</div>
+    <h1 class="title center">兑换成功</h1>
+    <p class="muted center" style="margin:0 0 18px;">商品已交付，请妥善保存，勿转发他人。</p>
+
+    <div style="border-top:1px solid var(--border-base);padding-top:16px;">
+      <div class="muted" style="font-size:13px;">商品名称</div>
+      <div style="font-size:17px;font-weight:700;margin:2px 0 10px;">XX 视频会员季卡（90 天）</div>
+      <div class="muted" style="font-size:13px;">有效期 / 规格</div>
+      <div style="margin:2px 0 4px;">激活后 90 天有效 · 单设备</div>
+    </div>
+
+    <!-- FR-006：按 delivery_type 渲染。此处示例 delivery_type=code（激活码） -->
+    <div class="delivery">
+      <code id="payload">QH7M-9XKD-22LP-AB6F</code>
+      <button class="copy" id="copy" type="button">复制</button>
+    </div>
+
+    <p class="rid">兑换编号 <b>RDM-20260619-0007</b>（截图可用于售后查询）</p>
+
+    <div class="link-row">
+      <a class="btn-ghost" href="#" id="open">打开领取页</a>
+      <a class="btn-ghost" href="redeem-home.html">返回首页</a>
+    </div>
+
+    <div class="sechint" style="margin-top:18px;">
+      <span class="dot">●</span>
+      <span>领取信息仅展示一次入口，复制后请尽快使用并妥善保管。</span>
+    </div>
+  </section>
+
+  <footer>如内容异常或无法使用，请通过失败页/售后入口联系商家，并提供兑换编号。</footer>
+</main>
+
+<script>
+  document.getElementById('copy').addEventListener('click', function(){
+    var t=document.getElementById('payload').textContent.trim();
+    if(navigator.clipboard) navigator.clipboard.writeText(t);
+    this.textContent='已复制'; var b=this; setTimeout(function(){b.textContent='复制';},1500);
+  });
+</script>
+</body>
+</html>

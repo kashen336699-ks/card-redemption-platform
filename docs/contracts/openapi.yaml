@@ -1,0 +1,210 @@
+openapi: 3.0.3
+info:
+  title: 卡密兑换平台 API
+  version: 1.0.0
+  description: >
+    MVP-1 兑换与售后接口。契约状态：FROZEN（2026-06-19，ADR-0002）。
+    前后端不得绕过本契约私加字段（项目规则 L2）。
+    安全：全站 HTTPS+HSTS；禁止经 URL Query 传卡密（SEC-003）；
+    响应不返回内部库存 ID/卡密明文/DB 错误/风控阈值（SEC-004）。
+servers:
+  - url: https://api.example.com/api/v1
+    description: 占位，部署后由 CDK 输出 ApiUrl 替换
+tags:
+  - name: redemption
+  - name: support
+paths:
+  /redemptions:
+    post:
+      tags: [redemption]
+      summary: 提交卡密兑换
+      description: 幂等接口。携带 request_id；重复 request_id 返回同一结果（FR-302/FR-004）。
+      operationId: createRedemption
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RedeemRequest' }
+      responses:
+        '200':
+          description: 兑换成功（或重复 request_id 命中已成功结果）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RedeemSuccess' }
+        '202':
+          description: 处理中（PROCESSING），客户端轮询 GET /redemptions/{id}（FR-010）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RedeemProcessing' }
+        '409':
+          description: 业务拒绝（已兑换/已过期/已禁用/无库存等稳定错误码）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '422':
+          description: 输入校验失败（格式/空值/非法字符，FR-002）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '429':
+          description: 频率限制（TOO_MANY_ATTEMPTS，SEC-005）
+          headers:
+            Retry-After: { schema: { type: integer }, description: 建议等待秒数 }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500':
+          description: 系统异常（SYSTEM_ERROR，本次未消耗卡密，NFR-003）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /redemptions/{id}:
+    get:
+      tags: [redemption]
+      summary: 查询兑换结果（处理中轮询）
+      operationId: getRedemption
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, example: RDM-20260619-0007 }
+      responses:
+        '200':
+          description: 已完成（成功）或处理中或已是终态
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/RedeemSuccess'
+                  - $ref: '#/components/schemas/RedeemProcessing'
+                  - $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 兑换编号不存在
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /support/lookup:
+    post:
+      tags: [support]
+      summary: 售后脱敏查询
+      description: 按卡密末四位/订单号/兑换编号定位，返回脱敏状态与日志摘要（FR-207）。
+      operationId: supportLookup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SupportLookupRequest' }
+      responses:
+        '200':
+          description: 脱敏查询结果
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SupportLookupResult' }
+        '404':
+          description: 未找到匹配记录
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+components:
+  schemas:
+    RedeemRequest:
+      type: object
+      required: [code, request_id]
+      properties:
+        code:
+          type: string
+          description: 卡密原文（前端已去空格/统一大小写/忽略分隔符）。仅经请求体传输，禁止 URL Query。
+          minLength: 8
+          maxLength: 40
+          example: ABCD-EFGH-JKLM-NPQR
+        request_id:
+          type: string
+          format: uuid
+          description: 客户端幂等键（FR-302）
+        client_ts:
+          type: integer
+          format: int64
+          description: 客户端毫秒时间戳（埋点用）
+    Product:
+      type: object
+      description: 对外商品信息，不含内部 SKU 库存 ID
+      properties:
+        name: { type: string, example: XX 视频会员季卡 }
+        spec: { type: string, example: 激活后 90 天有效 · 单设备 }
+        delivery_type:
+          type: string
+          enum: [text, code, link, file, guide]
+    Delivery:
+      type: object
+      description: 按 delivery_type 的差异化交付结构（FR-006）
+      properties:
+        type:
+          type: string
+          enum: [text, code, link, file, guide]
+        text: { type: string, description: type=text/code 时的内容 }
+        url: { type: string, description: type=link/file 时的短时签名 URL（SEC-010） }
+        guide: { type: string, description: type=guide 时的操作指引 }
+    RedeemSuccess:
+      type: object
+      required: [redemption_id, status, product, delivery]
+      properties:
+        redemption_id: { type: string, example: RDM-20260619-0007 }
+        status: { type: string, enum: [REDEEMED] }
+        product: { $ref: '#/components/schemas/Product' }
+        delivery: { $ref: '#/components/schemas/Delivery' }
+        redeemed_at: { type: string, format: date-time }
+    RedeemProcessing:
+      type: object
+      required: [redemption_id, status]
+      properties:
+        redemption_id: { type: string }
+        status: { type: string, enum: [PROCESSING] }
+        poll_after_ms: { type: integer, example: 800 }
+    ErrorResponse:
+      type: object
+      required: [error_code, message]
+      description: 稳定错误码，绝不暴露内部库存 ID/卡密明文/DB 错误/风控阈值（SEC-004）
+      properties:
+        error_code:
+          type: string
+          enum:
+            - INVALID_CODE
+            - ALREADY_REDEEMED
+            - EXPIRED_CODE
+            - DISABLED_CODE
+            - NO_STOCK
+            - TOO_MANY_ATTEMPTS
+            - SYSTEM_ERROR
+            - NOT_FOUND
+            - VALIDATION_ERROR
+        message:
+          type: string
+          description: 面向用户的友好文案（PRD §6.3），不透露卡密是否"接近正确"
+          example: 未找到该卡密，请检查后重新输入
+        action:
+          type: string
+          description: 建议下一步
+          enum: [retry_input, contact_support, retry_later, wait, resubmit]
+    SupportLookupRequest:
+      type: object
+      description: 三选一定位条件
+      properties:
+        code_last4: { type: string, minLength: 4, maxLength: 4 }
+        order_ref: { type: string }
+        redemption_id: { type: string }
+    SupportLookupResult:
+      type: object
+      properties:
+        masked_code: { type: string, example: '****-****-****-AB6F' }
+        status:
+          type: string
+          enum: [AVAILABLE, PROCESSING, REDEEMED, EXPIRED, DISABLED, NO_STOCK]
+        product_name: { type: string }
+        redeemed_at: { type: string, format: date-time, nullable: true }
+        log_summary:
+          type: array
+          items:
+            type: object
+            properties:
+              action: { type: string }
+              at: { type: string, format: date-time }

@@ -1,0 +1,25 @@
+{
+  "name": "@card/api",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:concurrency": "vitest run test/concurrency",
+    "test:security": "vitest run test/security",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.637.0",
+    "@aws-sdk/lib-dynamodb": "^3.637.0",
+    "@aws-sdk/client-kms": "^3.637.0",
+    "@aws-sdk/client-secrets-manager": "^3.637.0",
+    "@card/contracts": "*"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.143",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

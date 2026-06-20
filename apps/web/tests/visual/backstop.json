@@ -1,0 +1,48 @@
+{
+  "id": "card-redemption",
+  "viewports": [
+    { "label": "mobile", "width": 390, "height": 844 },
+    { "label": "desktop", "width": 1440, "height": 1024 }
+  ],
+  "scenarios": [
+    {
+      "label": "redeem-home-default",
+      "url": "../../docs/specs/features/1.redeem-frontend/design/redeem-home.html",
+      "selectors": ["document"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "label": "redeem-home-loading",
+      "url": "../../docs/specs/features/1.redeem-frontend/design/redeem-home.html?state=loading",
+      "selectors": ["document"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "label": "redeem-home-error",
+      "url": "../../docs/specs/features/1.redeem-frontend/design/redeem-home.html?state=error",
+      "selectors": ["document"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "label": "redeem-success",
+      "url": "../../docs/specs/features/1.redeem-frontend/design/redeem-success.html",
+      "selectors": ["document"],
+      "misMatchThreshold": 0.1
+    },
+    {
+      "label": "redeem-error",
+      "url": "../../docs/specs/features/1.redeem-frontend/design/redeem-error.html?code=ALREADY_REDEEMED",
+      "selectors": ["document"],
+      "misMatchThreshold": 0.1
+    }
+  ],
+  "paths": {
+    "bitmaps_reference": "../../docs/evidence/visual/reference",
+    "bitmaps_test": "../../docs/evidence/visual/bitmaps_test",
+    "html_report": "../../docs/evidence/visual/report"
+  },
+  "engine": "puppeteer",
+  "engineOptions": { "args": ["--no-sandbox"] },
+  "report": ["browser"],
+  "asyncCaptureLimit": 5
+}

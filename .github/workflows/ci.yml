@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# 质量门禁固化到 PR：测试 + 类型检查 + 前端构建 + CDK 合成。
+# 对齐工作流 G4/G5：vitest 绿不等于 build 绿，故 build/synth 必跑。
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install (workspaces)
+        run: npm ci
+
+      - name: Typecheck (contracts + api)
+        run: npm run typecheck
+
+      - name: Backend unit/integration tests
+        run: npm run test:api
+
+      - name: Frontend component tests
+        run: npm run test:web
+
+      - name: Frontend build (tsc -b + vite)
+        env:
+          VITE_API_BASE_URL: https://ci.example.com/api/v1
+        run: npm run build -w apps/web
+
+      - name: CDK synth (deployability)
+        run: npm run synth -w infrastructure
+        env:
+          CDK_DEFAULT_ACCOUNT: '000000000000'
+          CDK_DEFAULT_REGION: us-east-2
+
+# 说明：视觉回归(BackstopJS+Chromium)较重，不在 CI 默认跑；
+# 如需，另起 job 装 puppeteer 后跑 `npm run test:visual -w apps/web`。
